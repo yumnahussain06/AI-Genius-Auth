@@ -1,0 +1,5 @@
+# Hide the environment variables containing secrets
+.env
+
+# Hide the heavy downloaded packages folder
+node_modules/
