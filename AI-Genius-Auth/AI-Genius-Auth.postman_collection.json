@@ -1,0 +1,114 @@
+{
+  "info": {
+    "name": "AI-Genius-Auth",
+    "_postman_id": "ai-genius-auth-collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "accessToken", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "1. Login - Admin",
+      "event": [{ "listen": "test", "script": { "exec": [
+        "var data = pm.response.json();",
+        "pm.collectionVariables.set('accessToken', data.data.accessToken);"
+      ]}}],
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:3000/api/auth/login",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\"email\":\"admin@ai-genius.com\",\"password\":\"Admin@123\"}" }
+      }
+    },
+    {
+      "name": "2. GET Free Model (Admin - 200)",
+      "request": {
+        "method": "GET",
+        "url": "http://localhost:3000/api/ai/free-model",
+        "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }]
+      }
+    },
+    {
+      "name": "3. POST Premium Model (Admin - 200)",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:3000/api/ai/premium-model",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": { "mode": "raw", "raw": "{\"prompt\":\"Generate a business plan\"}" }
+      }
+    },
+    {
+      "name": "4. DELETE Purge Cache (Admin - 200)",
+      "request": {
+        "method": "DELETE",
+        "url": "http://localhost:3000/api/ai/purge-cache",
+        "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }]
+      }
+    },
+    {
+      "name": "5. Login - Free User",
+      "event": [{ "listen": "test", "script": { "exec": [
+        "var data = pm.response.json();",
+        "pm.collectionVariables.set('accessToken', data.data.accessToken);"
+      ]}}],
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:3000/api/auth/login",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\"email\":\"free@ai-genius.com\",\"password\":\"Free@123\"}" }
+      }
+    },
+    {
+      "name": "6. POST Premium Model (Free User - 403)",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:3000/api/ai/premium-model",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": { "mode": "raw", "raw": "{\"prompt\":\"This should be denied\"}" }
+      }
+    },
+    {
+      "name": "7. DELETE Purge Cache (Free User - 403)",
+      "request": {
+        "method": "DELETE",
+        "url": "http://localhost:3000/api/ai/purge-cache",
+        "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }]
+      }
+    },
+    {
+      "name": "8. Expired Token Test (401)",
+      "request": {
+        "method": "GET",
+        "url": "http://localhost:3000/api/ai/free-model",
+        "header": [{ "key": "Authorization", "value": "Bearer expiredtoken.fake.signature" }]
+      }
+    },
+    {
+      "name": "9. Refresh Token",
+      "event": [{ "listen": "test", "script": { "exec": [
+        "var data = pm.response.json();",
+        "pm.collectionVariables.set('accessToken', data.data.accessToken);"
+      ]}}],
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:3000/api/auth/refresh",
+        "header": []
+      }
+    },
+    {
+      "name": "10. Logout",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:3000/api/auth/logout",
+        "header": []
+      }
+    }
+  ]
+}
